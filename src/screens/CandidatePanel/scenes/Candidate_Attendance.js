@@ -19,7 +19,7 @@ import {
   updateDoc,
   where,
 } from 'firebase/firestore';
-
+import Spinner from '../../../components/Spinner';
 const Candidate_Attendance = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -28,11 +28,9 @@ const Candidate_Attendance = () => {
   const { currentUser } = useAuth();
 
   const [data, setData] = useState([]);
-
+  const [loading,setLoading]=useState(true);
   useEffect(() => {
     // fetch attendance data from database
-
-    console.log(currentUser.email);
     const getData = async () => {
       const q = query(
         collection(db, 'users'),
@@ -44,16 +42,30 @@ const Candidate_Attendance = () => {
         // setScore(data[0].score);
         console.log(data);
         setData(data);
+        console.log("dataset");
       });
+    };
+    const fetchData=async()=>{
+      try {
+        setLoading(true);
+        await getData();
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+      }
     }
-
-    getData();
-
+    fetchData();
   }, []);
 
 
   return (
-    <div className='flex flex-col h-screen bg-gray-100'>
+    <>
+      {loading ? (
+        <>
+        <Spinner/>
+        </>
+      ):(
+        <div className='flex flex-col h-screen bg-gray-100'>
       <div>
         <Topbar />
       </div>
@@ -189,6 +201,9 @@ const Candidate_Attendance = () => {
         </div>
       </div>
     </div>
+      )}
+    </>
+    
   );
 };
 

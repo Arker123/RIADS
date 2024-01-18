@@ -22,7 +22,7 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
   const colors = tokens(theme.palette.mode);
   return (
     <MenuItem
-      active={selected === title}
+      // active={selected === title}
       style={{
         color: colors.grey[100],
       }}
@@ -43,14 +43,11 @@ const Sidebar = () => {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
-  async function handleLogout() {
-    try {
-      await logout();
-      navigate('/');
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  const handleLogout = () => {
+    // console.log("handleLogout called!");
+    logout(); // Call the logout function
+    navigate('/'); // Navigate to the home page
+  };
 
   return (
     <Box
@@ -68,9 +65,9 @@ const Sidebar = () => {
         '& .pro-inner-item:hover': {
           color: '#868dfb !important',
         },
-        '& .pro-menu-item.active': {
-          color: '#6870fa !important',
-        },
+        // '& .pro-menu-item.active': {
+        //   color: '#6870fa !important',
+        // },
       }}
     >
       <ProSidebar collapsed={isCollapsed}>
@@ -130,11 +127,31 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-
             <Item
               title='Candidate Profile'
               to='/admin-candidateprofile'
               icon={<PeopleOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title='Enrollment'
+              to='/admin-enrollments'
+              icon={<PeopleOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title='Approve Enrollment'
+              to='/admin-payments'
+              icon={<LibraryBooksOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title='Courses'
+              to='/admin-courses'
+              icon={<ReceiptOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
@@ -174,12 +191,11 @@ const Sidebar = () => {
               setSelected={setSelected}
             />
             <Item
-              onClick={handleLogout}
               title='Log Out'
-              to='/'
               icon={<LogoutOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
+              onClick={handleLogout}
             />
           </Box>
         </Menu>

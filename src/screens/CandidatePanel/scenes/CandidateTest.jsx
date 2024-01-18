@@ -21,7 +21,7 @@ const CandidateTest = () => {
     const getData = async () => {
       const q = query(
         collection(db, 'test-questions'),
-        where('Language', '==', language)
+        where('Language', '==', language) && where('Course','==', 'HMV')
       );
       await getDocs(q).then((response) => {
         let data = response.docs.map((ele) => ({ ...ele.data() }));
@@ -62,6 +62,16 @@ const CandidateTest = () => {
       }
     }
     toast.success(`Score is ${score}`);
+    const givedata=async(score)=>{
+      const q = query(
+        collection(db, 'test-results'),
+        where('email', '==', 'HMV') && where('Course','==', 'HMV')
+      );
+      await getDocs(q).then((response)=>{
+        
+      })
+    }
+    givedata();
   }
 
   return (

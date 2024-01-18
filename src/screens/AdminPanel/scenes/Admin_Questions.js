@@ -24,6 +24,7 @@ import {
   query,
   where,
 } from 'firebase/firestore';
+import Spinner from '../../../components/Spinner';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 // import { useForm } from 'react-hook-form';
 import { Controller, set, useForm } from 'react-hook-form';
@@ -52,14 +53,25 @@ const schema = yup.object().shape({
   option4_punj: yup.string().required('option4_punj is required'),
   correct_option: yup.number().required('correct_option is required'),
   img: yup.string().required('img is required'),
+  subjects: yup.string().required('Subject is required')
 });
+function getSelectedsubject() {
+  // Get the dropdown element
+  var dropdown = document.getElementById("subjects");
 
+  // Get the selected value
+  var selectedoption = dropdown.options[dropdown.selectedIndex].text;
+
+  // Display the selected value
+  document.getElementById("selectedsubject").textContent = selectedoption;
+}
 const Admin_Result = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [isSidebar, setIsSidebar] = useState(true);
 
   const [loading, setLoading] = useState(false);
+  const [loadin,setLoadin]=useState(true);
   const [error, setError] = useState('');
 
   const [open, setOpen] = useState(false);
@@ -118,6 +130,7 @@ const Admin_Result = () => {
           const engData = {
             QuestionId: data.id,
             Content: data.content_eng,
+            subjectid: document.getElementById("subjects").value, // data.subjects
             Options: [
               data.option1_eng,
               data.option2_eng,
@@ -132,6 +145,7 @@ const Admin_Result = () => {
           const punjData = {
             QuestionId: data.id,
             Content: data.content_punj,
+            subjectid: document.getElementById("subjects").value,
             Options: [
               data.option1_punj,
               data.option2_punj,
@@ -142,7 +156,11 @@ const Admin_Result = () => {
             Image: data.img,
             Language: 'Punjabi',
           };
-
+          //console.log('Document Eng written with ID: ', subjectData.subjectid);
+          const subject = await addDoc(
+            collection(db, 'test-questions'),
+            engData
+          );
           const docRefEng = await addDoc(
             collection(db, 'test-questions'),
             engData
@@ -160,7 +178,7 @@ const Admin_Result = () => {
       };
 
       try {
-        console.log('heyy');
+        // console.log('heyy');
 
         const testImageData = ref(storage, `test-images/${data.id}`);
         await uploadBytes(testImageData, e.target.img.files[0])
@@ -192,6 +210,7 @@ const Admin_Result = () => {
   const [info, setInfo] = useState([]);
 
   useEffect(() => {
+    const getData = async () => {
     const subscriber = db
       .collection('test-questions')
       .get()
@@ -236,10 +255,29 @@ const Admin_Result = () => {
         
         setInfo([...uniqueData]);
         console.log("UNIQUE DATA is: ", uniqueData);
-      });
+        console.log("here");
+      });};
+      const fetchData=async()=>{
+        try {
+          setLoadin(true);
+          console.log("true");
+          await getData();
+          setLoadin(false);
+          console.log("false");
+        } catch (error) {
+          console.error(error);
+        }
+      }
+      fetchData();
   }, []);
 
   return (
+    <>
+      {loadin ? (
+        <>
+        <Spinner/>
+        </>
+      ):(
     <div className='flex flex-col h-screen bg-gray-100'>
       <div>
         <Topbar />
@@ -284,12 +322,46 @@ const Admin_Result = () => {
                 component='h2'
               >
                 Add Questions{' '}
+                <table align="right">
+                <tr>
+                  <td>
+                  <Grid container spacing={6}>
+                    <Grid item xs={12} sm={4}>
+                      {/* <Controller
+                        name='subjects'
+                        control={control}
+                        defaultValue=''
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            label='Subject'
+                            error={!!errors.subjects}
+                            helperText={errors?.subjects?.message}
+                            fullWidth
+                            InputLabelProps={{
+                              shrink: true,
+                            }}
+                          />
+                        )}
+                      /> */}
+                        <label for="subjects">Courses:</label>
+                        <select name="subjects">
+                        <option value="S1">S1</option>
+                        <option value="S2">S2</option>
+                        <option value="S3">S3</option>
+                        <option value="S4">S4</option>
+                      </select>
+                    </Grid>
+                  </Grid>
+                  </td>
+                </tr>
+              </table>
                 {/* Content_eng Image Options Correct_Option Language */}
               </Typography>
               <Typography id='modal-modal-description' sx={{ mt: 2 }}>
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <Grid container spacing={6}>
-                    <Grid item xs={12} sm={4}>
+                    <Grid item xs={40} sm={4}>
                       <Controller
                         name='content_eng'
                         control={control}
@@ -563,6 +635,12 @@ const Admin_Result = () => {
                           scope='col'
                           className='px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider'
                         >
+                          Course
+                        </th>
+                        <th
+                          scope='col'
+                          className='px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider'
+                        >
                           View Eng
                         </th>
                         <th
@@ -592,7 +670,7 @@ const Admin_Result = () => {
                       </tr>
                     </thead>
                     {info?.map((info_data) => {
-                        // console.log("INFOOO IS ", info);
+                        console.log("INFOOO IS ", info);
                       return (
                       <tbody key={info_data.QuestionId} className='bg-white divide-y divide-gray-200'>
                         <tr key={info_data.QuestionId}>
@@ -602,7 +680,19 @@ const Admin_Result = () => {
                                 <div className='text-sm font-medium text-gray-900'>
                                   {/* {info.QuestionId} */}
                                   {/* {info_data.Language === 'English' ? info_data.Content : ""} */}
-                                  { info_data[0].Language === 'English' ? info_data[0].Content : info_data[1].Content} 
+                                  { info_data[0].Language === 'English' ? info_data[0].key : info_data[1].key} 
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className='px-6 py-4 whitespace-nowrap'>
+                            <div className='flex items-center'>
+                              <div className='ml-4'>
+                                <div className='text-sm font-medium text-gray-900'>
+                                  {/* {info.QuestionId} */}
+                                  {/* {info_data.Language === 'English' ? info_data.Content : ""} */}
+                                  { info_data[0].subjectid  } 
+                                  
                                 </div>
                               </div>
                             </div>
@@ -630,7 +720,7 @@ const Admin_Result = () => {
                                       setContentQues([info_data[0].Language, info_data[0].Content, info_data[0].Options]);
                                     }}
                                   >
-                                    Vieww
+                                    View
                                   </Button>
 
                                   
@@ -653,7 +743,7 @@ const Admin_Result = () => {
                                       setContentQues([info_data[1].Language, info_data[1].Content, info_data[1].Options]);
                                     }}
                                   >
-                                    View
+                                    ਦੇਖੋ
                                   </Button>
                                 </div>
                               </div>
@@ -663,7 +753,7 @@ const Admin_Result = () => {
                             <div className='flex items-center'>
                               <div className='ml-4'>
                                 <div className='text-sm font-medium text-gray-900'>
-                                  { info_data[0].Language === 'Punjabi' ? info_data[0].Content : info_data[1].Content}  
+                                  { info_data[0].Language === 'Punjabi' ? info_data[0].Correct_option : info_data[1].Correct_option}  
                                 </div>
                               </div>
                             </div>
@@ -683,6 +773,8 @@ const Admin_Result = () => {
                               type='submit'
                               onClick={async () => {
                                 // Delete both the documents
+                                var e = document.getElementById("subjects");
+                                var value = e.value;
                                 const q = query(
                                   collection(db, 'test-questions'),
                                   where('QuestionId', '==', info_data[0].QuestionId)
@@ -867,7 +959,8 @@ const Admin_Result = () => {
           </div>
         </div>
       </div>
-    </div>
+    </div>)};
+    </>
   );
 };
 

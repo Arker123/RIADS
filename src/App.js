@@ -22,6 +22,10 @@ import Admin_Study from './screens/AdminPanel/scenes/Admin_Study.js';
 import Candidate_Attendance from './screens/CandidatePanel/scenes/Candidate_Attendance.js';
 // import Candidate_Dashboard from './screens/CandidatePanel/scenes/Candidate_Dashboard.js';
 import Candidate_Result from './screens/CandidatePanel/scenes/Candidate_Result.js';
+import Admin_Payments from './screens/AdminPanel/scenes/Admin_Payments.js';
+import Admin_Courses from './screens/AdminPanel/scenes/Admin_Courses.js';
+import Admin_Enrollments from './screens/AdminPanel/scenes/Admin_Enrollment.js';
+import Candidate_Courses from './screens/CandidatePanel/scenes/Candidate_Courses.js';
 import Candidate_StudyMaterial from './screens/CandidatePanel/scenes/Candidate_StudyMaterial.js';
 import Candidate_Test from './screens/CandidatePanel/scenes/Candidate_Test.js';
 import Candidate_ViewRegistration from './screens/CandidatePanel/scenes/Candidate_ViewRegistration.js';
@@ -108,6 +112,15 @@ function App() {
           />
 
           <Route
+            path='/candidate-courses'
+            element={
+              <PrivateRoute>
+                <Candidate_Courses />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
             path='/admin-dashboard'
             element={
               <PrivateRoute>
@@ -123,6 +136,23 @@ function App() {
               </PrivateRoute>
             }
           />
+          <Route
+            path='/admin-courses'
+            element={
+              <PrivateRoute>
+                <Admin_Courses />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path='/admin-enrollments'
+            element={
+              <PrivateRoute>
+                <Admin_Enrollments />
+              </PrivateRoute>
+            }
+          />
+
           <Route
             path='/admin-notice'
             element={
@@ -156,6 +186,14 @@ function App() {
             }
           />
           <Route
+            path='/admin-payments'
+            element={
+              <PrivateRoute>
+                <Admin_Payments />
+              </PrivateRoute>
+            }
+          />
+          <Route
             path='/admin-candidateprofile'
             element={
               <PrivateRoute>
@@ -171,3 +209,4 @@ function App() {
 }
 
 export default App;
+

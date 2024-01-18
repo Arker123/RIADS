@@ -16,7 +16,7 @@ import { db } from '../../../firebase';
 import { tokens } from '../theme';
 import Sidebar from './global/Sidebar';
 import Topbar from './global/Topbar';
-
+import Spinner from '../../../components/Spinner';
 const schema = yup.object().shape({
   batchFrom: yup.date().required('Batch from date is required'),
   batchTo: yup.date().required('Batch to date is required'),
@@ -31,7 +31,7 @@ export default function Admin_Attendance() {
   const [batchTo, setBatchTo] = useState(new Date());
   const [attendanceDate, setAttendanceDate] = useState(new Date());
   const [data, setData] = useState([]);
-
+  const [loading,setLoading]=useState(true);
   useEffect(() => {
     const getData = async () => {
       const q = query(collection(db, 'users'));
@@ -40,7 +40,16 @@ export default function Admin_Attendance() {
         setData(data);
       });
     };
-    getData();
+    const fetchData=async()=>{
+      try {
+        setLoading(true);
+        await getData();
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchData();
   }, []);
 
   const {
@@ -94,6 +103,12 @@ export default function Admin_Attendance() {
   };
 
   return (
+    <>
+      {loading ? (
+        <>
+        <Spinner/>
+        </>
+      ):(
     <div className='flex flex-col h-screen bg-gray-100'>
       <div>
         <Topbar />
@@ -320,6 +335,7 @@ export default function Admin_Attendance() {
           </div>
         </div>
       </div>
-    </div>
+    </div>)};
+    </>
   );
 }

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Box, IconButton, Typography, useTheme } from '@mui/material';
 import { Menu, MenuItem, ProSidebar } from 'react-pro-sidebar';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 
 import 'react-pro-sidebar/dist/css/styles.css';
 
@@ -15,22 +15,25 @@ import ReceiptOutlinedIcon from '@mui/icons-material/ReceiptOutlined';
 
 import { tokens } from '../../theme';
 import user from '../user.png';
+import { useAuth } from '../../../../contexts/AuthContext';
 
-const Item = ({ title, to, icon, selected, setSelected }) => {
+const Item = ({ title, to, icon, selected, setSelected, onClick }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   return (
-    <MenuItem
-      active={selected === title}
-      style={{
-        color: colors.grey[100],
-      }}
-      onClick={() => setSelected(title)}
-      icon={icon}
-    >
-      <Typography>{title}</Typography>
-      <Link to={to} />
-    </MenuItem>
+    <div onClick={onClick}>
+      <MenuItem
+        active={selected === title}
+        style={{
+          color: colors.grey[100],
+        }}
+        onClick={() => setSelected(title)}
+        icon={icon}
+      >
+        <Typography>{title}</Typography>
+        <Link to={to} />
+      </MenuItem>
+    </div>
   );
 };
 
@@ -39,6 +42,14 @@ const Sidebar = () => {
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState('Dashboard');
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // console.log("handleLogout called!");
+    logout(); // Call the logout function
+    navigate('/'); // Navigate to the home page
+  };
 
   return (
     <Box
@@ -55,9 +66,9 @@ const Sidebar = () => {
         '& .pro-inner-item:hover': {
           color: '#868dfb !important',
         },
-        '& .pro-menu-item.active': {
-          color: '#6870fa !important',
-        },
+        // '& .pro-menu-item.active': {
+        //   color: '#6870fa !important',
+        // },
       }}
     >
       <ProSidebar collapsed={isCollapsed}>
@@ -133,8 +144,8 @@ const Sidebar = () => {
               setSelected={setSelected}
             />
             <Item
-              title='Test'
-              to='/candidate-test'
+              title='Courses'
+              to='/candidate-courses'
               icon={<ReceiptOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -155,10 +166,10 @@ const Sidebar = () => {
             />
             <Item
               title='Log Out'
-              to='/'
               icon={<LogoutOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
+              onClick={handleLogout} //call the logout fxn
             />
           </Box>
         </Menu>

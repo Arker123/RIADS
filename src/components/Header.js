@@ -4,9 +4,14 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUser } from '@fortawesome/free-regular-svg-icons';
+
 
 export const Header = () => {
   const [show, setShow] = useState(false);
+  const { isLogin, isAdmin } = useAuth();
   const showDropdown = (e) => {
     setShow(!show);
   };
@@ -49,22 +54,58 @@ export const Header = () => {
                   </NavDropdown.Item>
                 </NavDropdown>
                 <Nav.Link href='/notice'>Notice</Nav.Link>
-                <Link to='/login'>
-                  <button
-                    type='button'
-                    className='bg-[#c54545] px-3 py-2 text-white'
-                  >
-                    Login
-                  </button>
-                </Link>
+
+                {isLogin ?
+                  (isAdmin ?
+                    (
+                      <Link to='/admin-dashboard'>
+                        <FontAwesomeIcon icon={faUser} style={{ color: "#c54545", fontSize: "1.5em", marginTop:"10px", marginLeft:"20px" }} />
+                      </Link>
+                    )
+                    :
+                    (
+                      <Link to='/candidate-viewregistration'>
+                        <FontAwesomeIcon icon={faUser} style={{ color: "#c54545", fontSize: "1.5em", marginTop:"10px", marginLeft:"20px" }} />
+                      </Link>
+                    )
+                  )
+                  :
+                  (
+                    <Link to='/login'>
+                      <button
+                        type='button'
+                        className='bg-[#c54545] px-3 py-2 text-white'
+                      >
+                        Login
+                      </button>
+                    </Link>
+                  )}
+
+                {isLogin ?
+                  (
+                    <p></p>
+                  )
+                  :
+                  (
+                    <Link to='/register'>
+                      <button
+                        type='button'
+                        className='bg-[#c54545] px-3 py-2 text-white'
+                      >
+                        Register
+                      </button>
+                    </Link>
+                  )}
+
+
                 {/* <Link to='/candidate-dashboard'>
                   <button
-                    type='button'
-                    className='bg-[#c54545] px-3 py-2 text-white'
+                  type='button'
+                  className='bg-[#c54545] px-3 py-2 text-white'
                   >
-                    Candidate Panel
+                  Candidate Panel
                   </button>
-                </Link>
+                  </Link>
                 <Link to='/admin-dashboard'>
                   <button
                     type='button'
@@ -73,14 +114,7 @@ export const Header = () => {
                     Admin Panel
                   </button>
                 </Link> */}
-                <Link to='/register'>
-                  <button
-                    type='button'
-                    className='bg-[#c54545] px-3 py-2 text-white'
-                  >
-                    Register
-                  </button>
-                </Link>
+
               </Nav>
             </Navbar.Collapse>
           </Container>

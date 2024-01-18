@@ -35,7 +35,7 @@ import { mockDataResult } from '../data/mockData';
 import { tokens } from '../theme';
 import Sidebar from './global/Sidebar';
 import Topbar from './global/Topbar';
-
+import Spinner from '../../../components/Spinner';
 // import { Controller } from 'react-hook-form';
 
 const schema = yup.object().shape({
@@ -50,7 +50,7 @@ const Admin_Result = () => {
   const colors = tokens(theme.palette.mode);
   const [isSidebar, setIsSidebar] = useState(true);
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   const [open, setOpen] = useState(false);
@@ -161,6 +161,7 @@ const Admin_Result = () => {
   // const [animais, setAnimais] = useState([]);
 
   useEffect(() => {
+    const getData = async () => {
     const subscriber = db
       .collection('notice')
       .get()
@@ -176,6 +177,17 @@ const Admin_Result = () => {
         setInfo(InfoisList);
         // setLoading(false);
       });
+    };
+    const fetchData=async()=>{
+      try {
+        setLoading(true);
+        await getData();
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchData();
   }, []);
 
   // const FetchNotice = () => {
@@ -266,6 +278,12 @@ const Admin_Result = () => {
   // }
 
   return (
+    <>
+    {loading ? (
+      <>
+      <Spinner/>
+      </>
+    ):(
     <div className='flex flex-col h-screen bg-gray-100'>
       <div>
         <Topbar />
@@ -644,7 +662,8 @@ const Admin_Result = () => {
           </div>
         </div>
       </div>
-    </div>
+    </div>)};
+    </>
   );
 };
 

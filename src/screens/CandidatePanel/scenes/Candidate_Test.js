@@ -8,18 +8,20 @@ import {
   query,
   updateDoc,
   where,
+  getDoc
 } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { nanoid } from 'nanoid';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
-
+import Spinner from '../../../components/Spinner';
 import { useAuth } from '../../../contexts/AuthContext';
 import { db, storage } from '../../../firebase';
 // import Sidebar from '../../AdminPanel/scenes/global/Sidebar';
-// import Topbar from '../../AdminPanel/scenes/global/Topbar';
+// import Topbar from '../../AdminPanel/scenes/global/Topba';
 import TestForm from './global/TestForm';
+import { Try } from '@mui/icons-material';
 
 const CandidateTest = () => {
   // console.log(useAuth());
@@ -38,7 +40,7 @@ const CandidateTest = () => {
   const [answers, setAnswers] = useState({});
 
   const Languages = ['English', 'Punjabi'];
-
+  const [loading,setLoading]=useState(true);
   const [data_user, setData] = useState([]);
 
   // question counter
@@ -55,7 +57,16 @@ const CandidateTest = () => {
         // console.log(data);
       });
     };
-    getData();
+    const fetchData=async()=>{
+      try {
+        setLoading(true);
+        await getData();
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -135,7 +146,16 @@ const CandidateTest = () => {
         // console.log(data);
       });
     };
-    getData();
+    const fetchData=async()=>{
+      try {
+        setLoading(true);
+        await getData();
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchData();
   }, []);
 
   function handleNextQuestion() {
@@ -341,21 +361,44 @@ const CandidateTest = () => {
         // };
 
         const updateID = async () => {
-          const q = query(
-            collection(db, 'users'),
-            where('email', '==', currentUser.email)
+          const querySnapshot = await getDocs(
+            query(collection(db, 'test-results'), where('email', '==', currentUser.email) && where('Course','==','HMV'))
           );
-          await getDocs(q).then(async (response) => {
-            let data = response.docs.map((ele) => ({ ...ele.data() }));
-            const ref = doc(db, 'users', response.docs[0].id);
-            await updateDoc(ref, {
-              score: data_fetch.score,
-            });
-          });
+          const documentReference = querySnapshot.docs[0].ref;
+          const existingData = (await getDoc(documentReference)).data();
+          
+          let scores=existingData.Score;
+          scores.push(score);
+          let times=new Date();
+          scores.push(times);
+          try{
+            await updateDoc(documentReference, {
+              Score: scores
+            })
+            console.log("documentupdated")
+            await navigated();
+          }catch(error){
+            console.error("Error updating document:", error);
+          }
+          // const q = query(
+          //   collection(db, 'test-results'),
+          //   where('email', '==', currentUser.email) && where('Course','==','HMV')
+          // );
+          // await getDocs(q).then(async (response) => {
+          //   let data = response.docs.map((ele) => ({ ...ele.data() }));
+          //   console.log(data);
+          //   const ref = doc(db, 'test-results', data.email);
+          //   let scores=response.docs[0].Score;
+          //   scores.push(data_fetch.score);
+          //   let times=new Date().getTime();
+          //   scores.push(times);
+          //   await updateDoc(ref, {
+          //     Score: scores,
+          //   });
+          // });
         };
 
-        updateID();
-
+        await updateID();
         // await uploadData(data);
 
         // setLoading(false);
@@ -364,10 +407,11 @@ const CandidateTest = () => {
       }
     };
 
+
     add_score({
       score: score,
     });
-
+    
     // console.log(data_user.id);
 
     // get the current user id
@@ -376,10 +420,19 @@ const CandidateTest = () => {
     //     id:
 
     // redirect to the home page
+    
+  }
+  function navigated(){
     navigate('/candidate-result');
   }
 
   return (
+    <>
+      {loading ? (
+        <>
+        <Spinner/>
+        </>
+      ):(
     <div className='min-h-screen h-full'>
       {
         /* <div>
@@ -453,7 +506,8 @@ const CandidateTest = () => {
         {/* <div className="p-2 border-2 border-black">
           </div> */}
       </form>
-    </div>
+    </div>)};
+    </>
   );
 };
 

@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-
 import '../styles/Login.css';
 
 import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
@@ -9,7 +8,9 @@ import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 // import { useEffect, useState } from 'react';
 
 import { useAuth } from '../contexts/AuthContext';
+import '../contexts/AuthContext';
 import { db } from '../firebase';
+
 
 export default function Login() {
   const emailRef = useRef();
@@ -17,7 +18,7 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth();
+  const { login, setAdmin } = useAuth();
   const navigate = useNavigate();
 
   // admin email data list
@@ -42,7 +43,7 @@ export default function Login() {
       setError('');
       setLoading(true);
 
-      await login(emailRef.current.value, passwordRef.current.value);
+      await login(emailRef.current.value, passwordRef.current.value); // will check if the email is authorized or not
 
       console.log(emailRef.current.value); // email
 
@@ -51,10 +52,9 @@ export default function Login() {
         (ele) => ele.email === emailRef.current.value
       );
       if (admin) {
-        navigate('/admin-dashboard');
-      } else {
-        navigate('/candidate-viewregistration');
+        setAdmin();
       }
+      navigate('/');
 
       // const userType = document.querySelector(
       //   'input[name="choice"]:checked'

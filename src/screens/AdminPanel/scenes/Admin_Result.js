@@ -18,34 +18,64 @@ import {
   updateDoc,
   where,
 } from 'firebase/firestore';
-
+import Spinner from '../../../components/Spinner';
 const Admin_Result = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [isSidebar, setIsSidebar] = useState(true);
 
   const [data, setData] = useState([]);
-
+  const [loading,setLoading]=useState(true);
   useEffect(() => {
     // fetch result data from database
 
     const getData = async () => {
       const q = query(
-        collection(db, 'users'),
+        collection(db, 'test-results'),
       );
       await getDocs(q).then((response) => {
-        let data = response.docs.map((ele) => ({ ...ele.data() }));
+        let data2 = response.docs.map((ele) => ({ ...ele.data() }));
         // console.log(data[0].score);
         // setScore(data[0].score);
+        let data=[];
+        for (let i = 0; i < data2.length; i++) {
+          for (let j = 0; j < data2[i].Score.length; j=j+2) {
+            // let dates=data2[i].Score[j+1].toDate();
+            // let onlyDate = dates.toISOString().split('T')[0];
+            let data3={
+              id:data2[i].id,
+              name:data2[i].name,
+              Course:data2[i].Course,
+              Score:data2[i].Score[j],
+              date:data2[i].Score[j+1]
+            };
+            data.push(data3);
+          }
+        }
+        data.sort((a, b) => b.date - a.date);
         setData(data);
       });
     }
-
-    getData();
+    const fetchData=async()=>{
+      try {
+        setLoading(true);
+        await getData();
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchData();
   }, []);
 
 
   return (
+    <>
+      {loading ? (
+        <>
+        <Spinner/>
+        </>
+      ):(
     <div className='flex flex-col h-screen bg-gray-100'>
       <div>
         <Topbar />
@@ -91,13 +121,13 @@ const Admin_Result = () => {
                           scope='col'
                           className='px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider'
                         >
-                          Age
+                          Course
                         </th>
                         <th
                           scope='col'
                           className='px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider'
                         >
-                          Gender
+                          Date
                         </th>
                         <th
                           scope='col'
@@ -113,7 +143,7 @@ const Admin_Result = () => {
                         </th>
                         {/* <th
                           scope='col'
-                          className='px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider'
+                          className='px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wide'
                         >
                           Marksheet
                         </th> */}
@@ -122,6 +152,12 @@ const Admin_Result = () => {
                           className='px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider'
                         >
                           Pass/Fail
+                        </th>
+                        <th
+                          scope='col'
+                          className='px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider'
+                        >
+                          CERTIFICATE/INVOICE
                         </th>
                         {/* <th
                           scope='col'
@@ -171,7 +207,7 @@ const Admin_Result = () => {
                             <div className='flex items-center'>
                               <div className='ml-4'>
                                 <div className='text-sm font-medium text-gray-900'>
-                                  {data.age}
+                                  {data.Course}
                                 </div>
                               </div>
                             </div>
@@ -180,7 +216,7 @@ const Admin_Result = () => {
                             <div className='flex items-center'>
                               <div className='ml-4'>
                                 <div className='text-sm font-medium text-gray-900'>
-                                  {data.gender}
+                                  {data.date.toDate().toISOString().split('T')[0]}
                                 </div>
                               </div>
                             </div>
@@ -208,6 +244,17 @@ const Admin_Result = () => {
                               <div className='ml-4'>
                                 <div className='text-sm font-medium text-gray-900'>
                                   {data.score >= 30 ? 'Pass' : 'Fail'}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className='px-6 py-4 whitespace-nowrap'>
+                            <div className='flex items-center'>
+                              <div className='ml-4'>
+                                <div className='text-sm font-medium text-gray-900'>
+                                  <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                    DOWNLOAD
+                                  </button>
                                 </div>
                               </div>
                             </div>
@@ -255,7 +302,8 @@ const Admin_Result = () => {
           </div>
         </div>
       </div>
-    </div>
+    </div>)};
+    </>
   );
 };
 

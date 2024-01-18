@@ -6,7 +6,7 @@ import { mockDataContacts } from '../data/mockData';
 import { tokens } from '../theme';
 import Sidebar from './global/Sidebar';
 import Topbar from './global/Topbar';
-
+import Spinner from '../../../components/Spinner';
 import { useAuth } from '../../../contexts/AuthContext';
 import { db } from '../../../firebase';
 import {
@@ -60,7 +60,7 @@ const Candidate_StudyMaterial = () => {
   const { currentUser } = useAuth();
 
   const [data, setData] = useState([]);
-
+  const [loading,setLoading]=useState(true);
   useEffect(() => {
     // fetch study material data from database
 
@@ -75,15 +75,27 @@ const Candidate_StudyMaterial = () => {
         console.log(data);
       });
     }
-
-    getData();
-
-
+    const fetchData=async()=>{
+      try {
+        setLoading(true);
+        await getData();
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchData();
   }, []);
 
 
 
   return (
+    <>
+      {loading ? (
+        <>
+        <Spinner/>
+        </>
+      ):(
     <div className='flex flex-col h-screen bg-gray-100'>
       <div>
         <Topbar />
@@ -111,7 +123,8 @@ const Candidate_StudyMaterial = () => {
           </div>
         </div>
       </div>
-    </div>
+    </div>)};
+    </>
   );
 };
 

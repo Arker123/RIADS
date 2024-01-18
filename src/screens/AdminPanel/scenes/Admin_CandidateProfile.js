@@ -20,7 +20,7 @@ import Background from 'hero-slider/dist/components/Slide/Background';
 import { Controller, set, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
-
+import Spinner from '../../../components/Spinner';
 import Form from '../../../components/ui/form';
 import { useAuth } from '../../../contexts/AuthContext';
 import { db, storage } from '../../../firebase';
@@ -34,13 +34,12 @@ import Topbar from './global/Topbar';
 const TableRow = ({ data }) => {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   
   // variables and functions for modal
   const [approvalIsOpen, setApprovalIsOpen] = useState(false);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-
 
   function openApprovalModal() {
     setApprovalIsOpen(true);

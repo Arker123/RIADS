@@ -6,6 +6,8 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { tokens } from '../theme';
 import Sidebar from './global/Sidebar';
 import Topbar from './global/Topbar';
+// import Admin_CandidateProfile from './Admin_CandidateProfile.js';
+
 
 const Admin_Dashboard = () => {
   const theme = useTheme();
@@ -48,24 +50,24 @@ const Admin_Dashboard = () => {
               <ul class='list-none text-left'>
                 <li class='py-2'>
                   <a
-                    href='/cadidate-viewregistration'
-                    class='text-neutral-600 dark:text-neutral-200 no-underline hover:text-red-500 hover:ml-2 hover:text-lg'
+                    href='/admin-candidateprofile'
+                    class='text-neutral-600 dark:text-black no-underline hover:text-red-500 hover:ml-2 hover:text-lg'
                   >
                     View Registration
                   </a>
                 </li>
                 <li class='py-2'>
                   <a
-                    href='/candidate-studymaterial'
-                    class='text-neutral-600 dark:text-neutral-200 no-underline hover:text-red-500 hover:ml-2 hover:text-lg'
+                    href='/admin-study'
+                    class='text-neutral-600 dark:text-black no-underline hover:text-red-500 hover:ml-2 hover:text-lg'
                   >
                     Study Material
                   </a>
                 </li>
                 <li class='py-2'>
                   <a
-                    href='/candidate-attendance'
-                    class='text-neutral-600 dark:text-neutral-200 no-underline hover:text-red-500 hover:ml-2 hover:text-lg'
+                    href='/admin-attendance'
+                    class='text-neutral-600 dark:text-black no-underline hover:text-red-500 hover:ml-2 hover:text-lg'
                   >
                     Attendance
                   </a>
@@ -73,7 +75,7 @@ const Admin_Dashboard = () => {
                 <li class='py-2'>
                   <button
                     onClick={handleLogout}
-                    class='text-neutral-600 dark:text-neutral-200 no-underline hover:text-red-500 hover:ml-2 hover:text-lg'
+                    class='text-neutral-600 dark:text-black no-underline hover:text-red-500 hover:ml-2 hover:text-lg'
                   >
                     Logout
                   </button>

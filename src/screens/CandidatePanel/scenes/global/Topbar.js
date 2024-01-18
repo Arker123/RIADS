@@ -1,5 +1,8 @@
 import { useContext } from 'react';
+import { Link } from 'react-router-dom';
+
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
@@ -16,41 +19,29 @@ const Topbar = () => {
   const colorMode = useContext(ColorModeContext);
 
   return (
-    <Box display='flex' justifyContent='space-between' p={2}>
-      {/* SEARCH BAR */}
-      {/* <Box
-        display='flex'
-        backgroundColor={colors.primary[400]}
-        borderRadius='3px'
-      >
-        <InputBase sx={{ ml: 2, flex: 1 }} placeholder='Search' />
-        <IconButton type='button' sx={{ p: 1 }}>
-          <SearchIcon />
+    <Box display='flex' justifyContent='flex-start' p={1}>
+      
+      <Box>
+        <Link to="/">
+        <IconButton type='button' size='large'>
+          <HomeOutlinedIcon />
         </IconButton>
-      </Box> */}
-
-      {/* ICONS */}
-      {/* <Box display='flex'>
-        <IconButton onClick={colorMode.toggleColorMode}>
-          {theme.palette.mode === 'dark' ? (
-            <DarkModeOutlinedIcon />
-          ) : (
-            <LightModeOutlinedIcon />
-          )}
-        </IconButton>
-        <IconButton>
-          <NotificationsOutlinedIcon />
-        </IconButton>
-        <IconButton>
-          <SettingsOutlinedIcon />
-        </IconButton>
-        <IconButton>
-          <PersonOutlinedIcon />
-        </IconButton>
-      </Box> */}
-
-      {/*Add spacing */}
-      <p className='text-2xl font-bold'>Candidate Portal</p>
+        </Link>
+      </Box>
+      <Box>
+        <p className='text-3xl font-normal text-green'
+          style={{ marginTop: '5px', marginRight: '10px' }}
+          margin-bottom='0'> | </p>
+      </Box>
+      <Box>
+        <p
+          className='text-2xl font-bold'
+          style={{ marginTop: '8px' }}
+          margin-bottom='0'
+        >
+            Candidate Portal
+        </p>
+      </Box>
     </Box>
   );
 };

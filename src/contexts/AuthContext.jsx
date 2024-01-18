@@ -12,17 +12,27 @@ export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState();
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState();
+  const [isLogin, setIsLogin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   function signup(email, password) {
     return auth.createUserWithEmailAndPassword(email, password);
   }
 
   function login(email, password) {
+    setIsLogin(true);
     return auth.signInWithEmailAndPassword(email, password);
   }
-
+  
   function logout() {
+    // console.log("logout called!");
+    setIsAdmin(false);
+    setIsLogin(false);
     return auth.signOut();
+  }
+  
+  function setAdmin() {
+    return setIsAdmin(true);
   }
 
   function resetPassword(email) {
@@ -65,6 +75,9 @@ export function AuthProvider({ children }) {
   const value = {
     currentUser,
     userRole,
+    isLogin,
+    isAdmin,
+    setAdmin,
     login,
     signup,
     logout,

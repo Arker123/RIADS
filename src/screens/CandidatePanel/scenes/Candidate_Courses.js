@@ -79,7 +79,7 @@ export default function Candidate_Courses() {
   const handleRowClick = (RowId) => {
     setOpenRowId(openRowId === RowId ? null : RowId)
   }
-
+  const [data2,setData2]=useState([]);
   const [data, setData] = useState([]);
   const [loading,setLoading]=useState(true);
   useEffect(() => {
@@ -98,10 +98,21 @@ export default function Candidate_Courses() {
         setData(data);
       });
     }
+    const getData2 = async () => {
+      const q = query(
+        collection(db, 'test-results'), where('email', '==', currentUser.email)
+      );
+      await getDocs(q).then((response) => {
+        let data = response.docs.map((ele) => ({ ...ele.data() }));
+        console.log(data);
+        setData2(data);
+      });
+    }
     const fetchData=async()=>{
       try {
         setLoading(true);
         await getData();
+        await getData2();
         setLoading(false);
       } catch (error) {
         console.error(error);
@@ -445,27 +456,27 @@ export default function Candidate_Courses() {
                           <TableRow>
                             <TableCell><strong>COURSE NAME</strong></TableCell>
                             {/* <TableCell align="right"><strong>START DATE</strong></TableCell> */}
-                            <TableCell align="right"><strong>PRICE</strong></TableCell>
-                            <TableCell align="right"><strong>Test</strong></TableCell>
+                            <TableCell align="right"><strong>Enrolled on</strong></TableCell>
+                            <TableCell align="right" ><strong>Test</strong></TableCell>
                             <TableCell />
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {Array.isArray(data) && data.map((item, index) => {
+                          {Array.isArray(data2) && data2.map((item, index) => {
                             console.log(item)
 
                             const RowId = `Row-${index}`
                             const IsOpen = openRowId === RowId
-
+  
                             return (
                               <>
                                 <React.Fragment key={RowId}>
                                   <TableRow aria-label="expand row" size="small"
                                      sx={{ '& > *': { borderBottom: 'unset' } }}>
 
-                                    <TableCell component="th" scope="row" >{item.Name}</TableCell>
+                                    <TableCell component="th" scope="row" >{item.Course}</TableCell>
                                     {/* <TableCell align="right">{item.StartDate}</TableCell> */}
-                                    <TableCell align="right">{item.Price}</TableCell>
+                                    <TableCell align="right">{item.Enrolledat.toDate().toISOString().split('T')[0]}</TableCell>
                                     <TableCell align="right">
                                       <Button onClick={handleTest}>Take Test Now</Button>
                                     </TableCell>
@@ -480,7 +491,7 @@ export default function Candidate_Courses() {
                                       <Collapse in={IsOpen} timeout="auto" unmountOnExit>
                                         <Box sx={{ margin: 1 }}>
                                           <Typography variant="p" gutterBottom component="div">
-                                          {item.Description}
+                                          Give the test To get Your Certificate in Result Section
                                           </Typography>
                                         </Box>
                                       </Collapse>

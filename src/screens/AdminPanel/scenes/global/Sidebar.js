@@ -17,23 +17,7 @@ import { useAuth } from '../../../../contexts/AuthContext';
 import { tokens } from '../../theme';
 import user from '../user.png';
 
-const Item = ({ title, to, icon, selected, setSelected }) => {
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
-  return (
-    <MenuItem
-      // active={selected === title}
-      style={{
-        color: colors.grey[100],
-      }}
-      onClick={() => setSelected(title)}
-      icon={icon}
-    >
-      <Typography>{title}</Typography>
-      <Link to={to} />
-    </MenuItem>
-  );
-};
+
 
 const Sidebar = () => {
   const theme = useTheme();
@@ -43,11 +27,46 @@ const Sidebar = () => {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    // console.log("handleLogout called!");
-    logout(); // Call the logout function
-    navigate('/'); // Navigate to the home page
+  async function handleLogout() {
+    try {
+      console.log("here");
+      await logout();
+      navigate('/');
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  const Item = ({ title, to, icon, selected, setSelected}) => {
+    const theme = useTheme();
+    const colors = tokens(theme.palette.mode);
+    if(title==='Log Out'){
+      return (
+        <MenuItem
+          style={{
+            color: colors.grey[100],
+          }}
+          onClick={() => handleLogout()}
+          icon={icon}
+        >
+          <Typography>{title}</Typography>
+          <Link to={to} />
+        </MenuItem>
+      );
+    }
+    return (
+      <MenuItem
+        style={{
+          color: colors.grey[100],
+        }}
+        onClick={() => setSelected(title)}
+        icon={icon}
+      >
+        <Typography>{title}</Typography>
+        <Link to={to} />
+      </MenuItem>
+    );
   };
+
 
   return (
     <Box
@@ -195,7 +214,6 @@ const Sidebar = () => {
               icon={<LogoutOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
-              onClick={handleLogout}
             />
           </Box>
         </Menu>

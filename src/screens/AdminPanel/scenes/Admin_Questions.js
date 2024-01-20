@@ -52,19 +52,9 @@ const schema = yup.object().shape({
   option3_punj: yup.string().required('option3_punj is required'),
   option4_punj: yup.string().required('option4_punj is required'),
   correct_option: yup.number().required('correct_option is required'),
-  img: yup.string().required('img is required'),
-  subjects: yup.string().required('Subject is required')
+  img: yup.string().required('img is required')
 });
-function getSelectedsubject() {
-  // Get the dropdown element
-  var dropdown = document.getElementById("subjects");
 
-  // Get the selected value
-  var selectedoption = dropdown.options[dropdown.selectedIndex].text;
-
-  // Display the selected value
-  document.getElementById("selectedsubject").textContent = selectedoption;
-}
 const Admin_Result = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -73,13 +63,13 @@ const Admin_Result = () => {
   const [loading, setLoading] = useState(false);
   const [loadin,setLoadin]=useState(true);
   const [error, setError] = useState('');
-
+  const [selectedCourse, setSelectedCourse] = useState('');
   const [open, setOpen] = useState(false);
 
   const [open_eng, setOpenEng] = useState(false);
 
   const [content_ques, setContentQues] = useState(['English', 'ENG_QUES', ['1','2','3','4']])
-
+  const [Courses,setCourses]=useState([]);
   const handleCloseEng = () => {
     setOpenEng(false);
   };
@@ -116,21 +106,21 @@ const Admin_Result = () => {
 
   const onSubmit = async (data, e) => {
     try {
+      console.log("alsohere");
       console.log(data);
       setOpen(false);
 
       setError('');
-      setLoading(true);
+      setLoadin(true);
 
       data.id = uuidv4();
-
       // tkae data from form and upload it to firebase
       const uploadData = async (data) => {
         try {
           const engData = {
             QuestionId: data.id,
             Content: data.content_eng,
-            subjectid: document.getElementById("subjects").value, // data.subjects
+            subjectid: selectedCourse, // data.subjects
             Options: [
               data.option1_eng,
               data.option2_eng,
@@ -141,11 +131,11 @@ const Admin_Result = () => {
             Image: data.img,
             Language: 'English',
           };
-
+          console.log(engData);
           const punjData = {
             QuestionId: data.id,
             Content: data.content_punj,
-            subjectid: document.getElementById("subjects").value,
+            subjectid: selectedCourse,
             Options: [
               data.option1_punj,
               data.option2_punj,
@@ -157,10 +147,10 @@ const Admin_Result = () => {
             Language: 'Punjabi',
           };
           //console.log('Document Eng written with ID: ', subjectData.subjectid);
-          const subject = await addDoc(
-            collection(db, 'test-questions'),
-            engData
-          );
+          // const subject = await addDoc(
+          //   collection(db, 'test-questions'),
+          //   engData
+          // );
           const docRefEng = await addDoc(
             collection(db, 'test-questions'),
             engData
@@ -200,8 +190,8 @@ const Admin_Result = () => {
         console.error('Error uploading Image: ', e);
         setError('Failed to upload Image');
       }
-
-      setLoading(false);
+      setLoadin(false);
+      
     } catch (e) {
       console.log(e);
     }
@@ -226,7 +216,7 @@ const Admin_Result = () => {
         // setInfo(InfoisList);
         // console.log(InfoisList);
         // Club the data with the same id and separate content_eng and content_punj
-        console.log("INFOLST: ", InfoisList);
+        
         const unique = InfoisList.reduce((acc, current) => {
           const x = acc.find((item) => item.QuestionId === current.QuestionId);
           if (!x) {
@@ -250,27 +240,36 @@ const Admin_Result = () => {
         // const uniqueData = [];
 
         // Club the data with the same id
-        console.log("UNIQUE: ", unique);
+        
 
         
         setInfo([...uniqueData]);
-        console.log("UNIQUE DATA is: ", uniqueData);
-        console.log("here");
+      
       });};
+      const getCourses = async () => {
+        const q = query(collection(db, 'Courses'));
+        await getDocs(q).then((response) => {
+          let data = response.docs.map((ele) => ({ ...ele.data() }));
+          setCourses(data);
+          console.log("here");
+        });
+      };
       const fetchData=async()=>{
         try {
           setLoadin(true);
-          console.log("true");
+          await getCourses();
           await getData();
           setLoadin(false);
-          console.log("false");
+          setSelectedCourse(Courses[0].Name);
         } catch (error) {
           console.error(error);
         }
       }
       fetchData();
   }, []);
-
+  const handleCourseChange = async(event) => {
+    setSelectedCourse(event.target.value);
+  };
   return (
     <>
       {loadin ? (
@@ -345,11 +344,10 @@ const Admin_Result = () => {
                         )}
                       /> */}
                         <label for="subjects">Courses:</label>
-                        <select name="subjects">
-                        <option value="S1">S1</option>
-                        <option value="S2">S2</option>
-                        <option value="S3">S3</option>
-                        <option value="S4">S4</option>
+                        <select name="subjects" onChange={handleCourseChange}>
+                        {Courses.map((details) => (
+                          <option value={details.Name}>{details.Name}</option>
+                        ))}      
                       </select>
                     </Grid>
                   </Grid>

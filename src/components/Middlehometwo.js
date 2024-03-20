@@ -113,7 +113,7 @@ export const Middlehometwo = () => {
           }
         </OwlCarousel>
 
-        <div>
+        {/*<div>
           <div className='m-4'>
             <div className='container'>
               <div>
@@ -131,7 +131,7 @@ export const Middlehometwo = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div>*/}
       </div>
     </>
   );
